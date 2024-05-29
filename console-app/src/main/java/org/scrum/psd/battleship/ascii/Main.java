@@ -105,7 +105,7 @@ public class Main {
             if (isHit) {
                 System.out.println(colorize(String.format("Computer shoot in %s%s and %s", position.getColumn(), position.getRow(), "hit your ship !"),COLOR_HITS));
                 beep();
-                System.out.println(colorize("Yeah ! Nice hit !",GREEN_TEXT()));
+                //System.out.println(colorize("Yeah ! Nice hit !",GREEN_TEXT()));
                 System.out.println(colorize("                \\         .  ./",COLOR_HITS));
                 System.out.println(colorize("              \\      .:\" \";'.:..\" \"   /",COLOR_HITS));
                 System.out.println(colorize("                  (M^^.^~~:.'\" \").",COLOR_HITS));
