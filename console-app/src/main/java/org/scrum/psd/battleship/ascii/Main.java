@@ -155,7 +155,7 @@ public class Main {
 
     private static void pressEnterKeyToContinue()
     { 
-            System.out.println("Press Enter key to continue...");
+            System.out.println("Press Enter key to continue to the next round...");
             Scanner s = new Scanner(System.in);
             s.nextLine();
     }
