@@ -69,10 +69,19 @@ public class Main {
         System.out.println("    \" \"\" \"\" \"\" \"");
 
         do {
-            System.out.println("");
-            System.out.println(">>> Player, it's your turn");
-            System.out.println("Enter coordinates for your shot :");
-            Position position = parsePosition(scanner.next());
+            Position position = new Position();
+            boolean positionValid = false;
+            while( !positionValid ) {
+                System.out.println("");
+                System.out.println(">>> Player, it's your turn");
+                System.out.println("Enter coordinates for your shot :");
+                position = parsePosition(scanner.next());
+                positionValid = attackPositionValid(position);
+                if( !positionValid ) {
+                    System.out.println(colorize("Attack position is out of bounds, please try again", RED_TEXT()));
+                }
+            };
+
             myGuessedPositions.add(position);
             boolean isHit = GameController.checkIsHit(enemyFleet, position, myGuessedPositions);
             if (isHit) {
@@ -104,7 +113,6 @@ public class Main {
 
             System.out.println("");
             System.out.println("<<< Computer, it's your turn");
-            //System.out.println(String.format("Computer shoot in %s%s and %s", position.getColumn(), position.getRow(), isHit ? "hit your ship !" : "miss"));
             telemetry.trackEvent("Computer_ShootPosition", "Position", position.toString(), "IsHit", Boolean.valueOf(isHit).toString());
             if (isHit) {
                 System.out.println(colorize(String.format("Computer shoot in %s%s and %s", position.getColumn(), position.getRow(), "hit your ship !"),COLOR_HITS));
@@ -127,6 +135,17 @@ public class Main {
             System.out.println(colorize("Player fleet status", BRIGHT_GREEN_TEXT()));
             printFleetStatus(myFleet);
         } while (true);
+    }
+
+    private static boolean attackPositionValid(Position p) {
+        if( p.getColumn() == null ) {
+            return false;
+        }
+        if( p.getRow() < 1 || p.getRow() > boardWidth ) {
+            return false;
+        }
+
+        return true;
     }
 
     private static void checkVictoryCondition() {
