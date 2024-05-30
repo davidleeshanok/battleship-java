@@ -6,14 +6,11 @@ import org.scrum.psd.battleship.controller.dto.Letter;
 import org.scrum.psd.battleship.controller.dto.Position;
 import org.scrum.psd.battleship.controller.dto.Ship;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GameControllerTest {
     @Test
-    public void testCheckIsHitTrue() {
+    public void testProcessShotTrue() {
         List<Ship> ships = GameController.initializeShips();
         int counter = 0;
 
@@ -27,13 +24,13 @@ public class GameControllerTest {
             counter++;
         }
 
-        boolean result = GameController.checkIsHit(ships, new Position(Letter.A, 1),new HashSet<>());
+        Optional<Ship> result = GameController.processShot(ships, new Position(Letter.A, 1), Collections.emptySet());
 
-        Assert.assertTrue(result);
+        Assert.assertTrue(result.isPresent());
     }
 
     @Test
-    public void testCheckIsHitFalse() {
+    public void testProcessShotFalse() {
         List<Ship> ships = GameController.initializeShips();
         int counter = 0;
 
@@ -47,19 +44,19 @@ public class GameControllerTest {
             counter++;
         }
 
-        boolean result = GameController.checkIsHit(ships, new Position(Letter.H, 1),new HashSet<>());
+        Optional<Ship> result = GameController.processShot(ships, new Position(Letter.H, 1), Collections.emptySet());
 
-        Assert.assertFalse(result);
+        Assert.assertFalse(result.isPresent());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCheckIsHitPositstionIsNull() {
-        GameController.checkIsHit(GameController.initializeShips(), null,new HashSet<>());
+        GameController.processShot(GameController.initializeShips(), null, Collections.emptySet());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCheckIsHitShipIsNull() {
-        GameController.checkIsHit(null, new Position(Letter.H, 1),new HashSet<>());
+        GameController.processShot(null, new Position(Letter.H, 1), Collections.emptySet());
     }
 
     @Test
