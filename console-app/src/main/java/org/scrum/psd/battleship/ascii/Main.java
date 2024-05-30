@@ -126,6 +126,12 @@ public class Main {
             System.out.println("");
             System.out.println(colorize("Player fleet status", BRIGHT_GREEN_TEXT()));
             printFleetStatus(myFleet);
+            
+            // Clear screen here so it doesn't overwrite first turn instructions
+            System.out.println("");
+            pressEnterKeyToContinue();
+            System.out.print("\033[2J\033[;H");
+
         } while (true);
     }
 
@@ -145,6 +151,13 @@ public class Main {
 
     private static void beep() {
         System.out.print("\007");
+    }
+
+    private static void pressEnterKeyToContinue()
+    { 
+            System.out.println("Press Enter key to continue...");
+            Scanner s = new Scanner(System.in);
+            s.nextLine();
     }
 
     private static void printFleetStatus(List<Ship> fleet) {
