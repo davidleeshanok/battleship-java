@@ -83,6 +83,7 @@ public class Main {
                 System.out.println(colorize("            -   (\\- |  \\ /  |  /)  -",COLOR_HITS));
                 System.out.println(colorize("                 -\\  \\     /  /-",COLOR_HITS));
                 System.out.println(colorize("                   \\  \\   /  /",COLOR_HITS));
+                checkVictoryCondition();
             }
             else {
                 System.out.println(colorize("MISS",COLOR_MISSES));
@@ -114,7 +115,7 @@ public class Main {
                 System.out.println(colorize("            -   (\\- |  \\ /  |  /)  -",COLOR_HITS));
                 System.out.println(colorize("                 -\\  \\     /  /-",COLOR_HITS));
                 System.out.println(colorize("                   \\  \\   /  /",COLOR_HITS));
-
+                checkVictoryCondition();
             } else {
                 System.out.println(colorize(String.format("Computer shoots in %s%s and %s", position.getColumn(), position.getRow(), "missed"), COLOR_MISSES));
             }
@@ -123,6 +124,20 @@ public class Main {
             System.out.println(colorize("Player fleet status", BRIGHT_GREEN_TEXT()));
             printFleetStatus(myFleet);
         } while (true);
+    }
+
+    private static void checkVictoryCondition() {
+        boolean isMyFleetSunk = myFleet.stream().allMatch(Ship::isSunk);
+        if (isMyFleetSunk) {
+            System.out.println(colorize("Your fleet has been sunk! YOU LOSE", RED_TEXT()));
+            System.exit(0);
+        }
+
+        boolean isEnemyFleetSunk = enemyFleet.stream().allMatch(Ship::isSunk);
+        if (isEnemyFleetSunk) {
+            System.out.println(colorize("You have sunk the enemy fleet! Congratulations! You have won Battleship!", GREEN_TEXT()));
+            System.exit(0);
+        }
     }
 
     private static void beep() {
