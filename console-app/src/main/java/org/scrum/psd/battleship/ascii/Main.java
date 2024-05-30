@@ -94,6 +94,8 @@ public class Main {
             System.out.println(colorize("Enemy fleet status", BRIGHT_RED_TEXT()));
             printFleetStatus(enemyFleet);
 
+            telemetry.trackEvent("Player_ShootPosition", "Position", position.toString(), "IsHit", Boolean.valueOf(isHit).toString());
+
             position = getRandomPosition();
             enemyGuessedPositions.add(position);
 
@@ -193,7 +195,7 @@ public class Main {
                 System.out.println(String.format("Enter position %s of %s (i.e A3):", i, ship.getSize()));
 
                 String positionInput = scanner.next();
-                if(!previousPosition.isEmpty() && !validateInput(previousPosition, positionInput)) {
+                if(!previousPosition.isEmpty() && !validateInput(ship, previousPosition, positionInput)) {
                     i = i - 1;
                     System.out.println(colorize("Invalid input, please make sure that all positions is in a horizontal or vertical row and gaps are not allowed", RED_TEXT()));
                     continue;
@@ -205,7 +207,7 @@ public class Main {
         }
     }
 
-    private static boolean validateInput(String previousPosition, String positionInput) {
+    private static boolean validateInput(Ship currentShip, String previousPosition, String positionInput) {
         int prevLetterInt = previousPosition.toUpperCase().substring(0, 1).toCharArray()[0];
         int prevNumber = Integer.parseInt(previousPosition.substring(1));
         int curLetterInt = positionInput.toUpperCase().substring(0, 1).toCharArray()[0];
@@ -219,20 +221,30 @@ public class Main {
         if(curNumber - prevNumber > 1 && curLetterInt == prevLetterInt) {
             return false;
         }
-        return validateOverlap(positionInput);
+        return validateOverlap(myFleet, currentShip, positionInput);
     }
 
-    private static boolean validateOverlap(String positionInput) {
+    private static boolean validateOverlap(List<Ship> fleet, Ship currentShip, String positionInput) {
         Letter letter = Letter.valueOf(positionInput.toUpperCase().substring(0, 1));
         int number = Integer.parseInt(positionInput.substring(1));
         Position inputPosition = new Position(letter, number);
-        for (Ship ship : myFleet) {
-            for (int i = 1; i <= ship.getSize(); i++) {
-                for (Position position : ship.getPositions()){
-                    if(position.getColumn().toString() == inputPosition.getColumn().toString() && position.getRow() == inputPosition.getRow()) {
-                        return false;
-                    }
+        for (Ship ship : fleet) {
+            if (ship == currentShip) {
+                continue;
+            }
+            for (Position position : ship.getPositions()) {
+                if (position.getColumn().toString() == inputPosition.getColumn().toString() && position.getRow() == inputPosition.getRow()) {
+                    return false;
                 }
+            }
+        }
+        return true;
+    }
+
+    private static boolean isValidPosition(Ship ship) {
+        for (Position position : ship.getPositions()){
+            if(!validateOverlap(enemyFleet, ship, position.getColumn().toString() + position.getRow())) {
+                return false;
             }
         }
         return true;
@@ -240,27 +252,63 @@ public class Main {
 
     private static void InitializeEnemyFleet() {
         enemyFleet = GameController.initializeShips();
+        Letter[] letters = Letter.values();
+        do {
+            int rnd = new Random().nextInt(letters.length);
+            Letter letter = letters[rnd];
+            int row = (int) Math.floor(Math.random() * 5) + 1;
+            enemyFleet.get(0).setPositions(new ArrayList());
+            enemyFleet.get(0).getPositions().add(new Position(letter, row));
+            enemyFleet.get(0).getPositions().add(new Position(letter, row + 1));
+            enemyFleet.get(0).getPositions().add(new Position(letter, row + 2));
+            enemyFleet.get(0).getPositions().add(new Position(letter, row + 3));
+            enemyFleet.get(0).getPositions().add(new Position(letter, row + 4));
+            enemyFleet.get(0).getPositions().add(new Position(letter, row + 5));
+        }
+        while (!isValidPosition(enemyFleet.get(0)));
 
-        enemyFleet.get(0).getPositions().add(new Position(Letter.B, 4));
-        enemyFleet.get(0).getPositions().add(new Position(Letter.B, 5));
-        enemyFleet.get(0).getPositions().add(new Position(Letter.B, 6));
-        enemyFleet.get(0).getPositions().add(new Position(Letter.B, 7));
-        enemyFleet.get(0).getPositions().add(new Position(Letter.B, 8));
+        do {
+            int rnd = new Random().nextInt(letters.length);
+            Letter letter = letters[rnd];
+            int row = (int) Math.floor(Math.random() * 7) + 1;
+            enemyFleet.get(1).setPositions(new ArrayList());
+            enemyFleet.get(1).getPositions().add(new Position(letter, row));
+            enemyFleet.get(1).getPositions().add(new Position(letter, row + 1));
+            enemyFleet.get(1).getPositions().add(new Position(letter, row + 2));
+            enemyFleet.get(1).getPositions().add(new Position(letter, row + 3));
+        }
+        while (!isValidPosition(enemyFleet.get(1)));
 
-        enemyFleet.get(1).getPositions().add(new Position(Letter.E, 6));
-        enemyFleet.get(1).getPositions().add(new Position(Letter.E, 7));
-        enemyFleet.get(1).getPositions().add(new Position(Letter.E, 8));
-        enemyFleet.get(1).getPositions().add(new Position(Letter.E, 9));
+        do {
+            int rnd = new Random().nextInt(letters.length - 3);
+            Letter letter = letters[rnd];
+            int row = (int) Math.floor(Math.random() * 10) + 1;
+            enemyFleet.get(2).setPositions(new ArrayList());
+            enemyFleet.get(2).getPositions().add(new Position(letter, row));
+            enemyFleet.get(2).getPositions().add(new Position(letters[rnd + 1], row));
+            enemyFleet.get(2).getPositions().add(new Position(letters[rnd + 2], row));
+        }
+        while (!isValidPosition(enemyFleet.get(2)));
 
-        enemyFleet.get(2).getPositions().add(new Position(Letter.A, 3));
-        enemyFleet.get(2).getPositions().add(new Position(Letter.B, 3));
-        enemyFleet.get(2).getPositions().add(new Position(Letter.C, 3));
+        do {
+            int rnd = new Random().nextInt(letters.length - 3);
+            Letter letter = letters[rnd];
+            int row = (int) Math.floor(Math.random() * 10) + 1;
+            enemyFleet.get(3).setPositions(new ArrayList());
+            enemyFleet.get(3).getPositions().add(new Position(letter, row));
+            enemyFleet.get(3).getPositions().add(new Position(letters[rnd + 1], row));
+            enemyFleet.get(3).getPositions().add(new Position(letters[rnd + 2], row));
+        }
+        while (!isValidPosition(enemyFleet.get(3)));
 
-        enemyFleet.get(3).getPositions().add(new Position(Letter.F, 8));
-        enemyFleet.get(3).getPositions().add(new Position(Letter.G, 8));
-        enemyFleet.get(3).getPositions().add(new Position(Letter.H, 8));
-
-        enemyFleet.get(4).getPositions().add(new Position(Letter.C, 5));
-        enemyFleet.get(4).getPositions().add(new Position(Letter.C, 6));
+        do {
+            int rnd = new Random().nextInt(letters.length - 3);
+            Letter letter = letters[rnd];
+            int row = (int) Math.floor(Math.random() * 10) + 1;
+            enemyFleet.get(4).setPositions(new ArrayList());
+            enemyFleet.get(4).getPositions().add(new Position(letter, row));
+            enemyFleet.get(4).getPositions().add(new Position(letter, row + 1));
+        }
+        while (!isValidPosition(enemyFleet.get(4)));
     }
 }
