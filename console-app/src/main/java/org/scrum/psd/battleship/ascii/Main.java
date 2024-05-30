@@ -103,28 +103,23 @@ public class Main {
             System.out.println(colorize("Enemy fleet status", BRIGHT_RED_TEXT()));
             printFleetStatus(enemyFleet);
 
-            telemetry.trackEvent("Player_ShootPosition", "Position", position.toString(), "IsHit", Boolean.valueOf(isHit).toString());
-
             position = getRandomPosition();
             enemyGuessedPositions.add(position);
 
             System.out.println("");
             System.out.println("<<< Computer, it's your turn");
-            telemetry.trackEvent("Computer_ShootPosition", "Position", position.toString(), "IsHit", Boolean.valueOf(isHit).toString());
-            if (isHit) {
-                System.out.println(colorize(String.format("Computer shoot in %s%s and %s", position.getColumn(), position.getRow(), "hit your ship !"),COLOR_HITS));
-                beep();
-                //System.out.println(colorize("Yeah ! Nice hit !",GREEN_TEXT()));
-                System.out.println(colorize("                \\         .  ./",COLOR_HITS));
-                System.out.println(colorize("              \\      .:\" \";'.:..\" \"   /",COLOR_HITS));
-                System.out.println(colorize("                  (M^^.^~~:.'\" \").",COLOR_HITS));
-                System.out.println(colorize("            -   (/  .    . . \\ \\)  -",COLOR_HITS));
-                System.out.println(colorize("               ((| :. ~ ^  :. .|))",COLOR_HITS));
-                System.out.println(colorize("            -   (\\- |  \\ /  |  /)  -",COLOR_HITS));
-                System.out.println(colorize("                 -\\  \\     /  /-",COLOR_HITS));
-                System.out.println(colorize("                   \\  \\   /  /",COLOR_HITS));
-                checkVictoryCondition();
-            } else {
+            Optional<Ship> playerShipHit = GameController.processShot(myFleet, position, enemyGuessedPositions);
+            if (playerShipHit.isPresent()) {
+                Ship ship = playerShipHit.get();
+                System.out.println(colorize(String.format("Computer shoots in %s%s and hits your %s!", position.getColumn(), position.getRow(), ship.getName()),COLOR_HITS));
+
+                if (ship.isSunk()) {
+                    System.out.println(colorize("Oh no! The computer sunk your " + ship.getName(), RED_TEXT()));
+                    printExplosion();
+                    checkVictoryCondition();
+                }
+            }
+            else {
                 System.out.println(colorize(String.format("Computer shoots in %s%s and %s", position.getColumn(), position.getRow(), "missed"), COLOR_MISSES));
             }
 
