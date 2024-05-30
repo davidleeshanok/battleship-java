@@ -13,6 +13,11 @@ import static com.diogonunes.jcolor.Attribute.*;
 public class Main {
     private static List<Ship> myFleet;
     private static List<Ship> enemyFleet;
+
+    // probably make this a hash of configs later but for now we just need these 2 settings
+    private static int boardWidth;
+    private static int boardHeight;
+
     private static final Set<Position> myGuessedPositions = new HashSet<>();
     private static final Set<Position> enemyGuessedPositions = new HashSet<>();
 
@@ -48,8 +53,6 @@ public class Main {
 
     private static void StartGame() {
         Scanner scanner = new Scanner(System.in);
-
-        
 
         System.out.print("\033[2J\033[;H");
         System.out.println(colorize("GAME STARTING", COLOR_INSTRUCTIONS, COLOR_INSTRUCTIONS_BG));
@@ -159,18 +162,18 @@ public class Main {
     }
 
     private static Position getRandomPosition() {
-        int rows = 8;
-        int lines = 8;
         Random random = new Random();
-        Letter letter = Letter.values()[random.nextInt(lines)];
-        int number = random.nextInt(1, rows + 1);
+        Letter letter = Letter.values()[random.nextInt(boardHeight)];
+        int number = random.nextInt(1, boardWidth + 1);
         Position position = new Position(letter, number);
         return position;
     }
 
     private static void InitializeGame() {
-        InitializeMyFleet();
+        // default to original board size until configurable by the user
+        boardWidth = boardHeight = 10;
 
+        InitializeMyFleet();
         InitializeEnemyFleet();
     }
 
@@ -181,7 +184,7 @@ public class Main {
         System.out.println(colorize("SETUP PHASE", COLOR_INSTRUCTIONS, COLOR_INSTRUCTIONS_BG));
         System.out.println("");
         System.out.println(colorize("You will be prompted to enter the positions of each ship one at a time.", CYAN_TEXT(), WHITE_BACK()));
-        System.out.println(colorize("Game board has size from A to H and 1 to 8.", CYAN_TEXT(), WHITE_BACK()));
+        System.out.println(colorize(String.format("Game board has size from %s to %s and 1 to %s.", Letter.values()[0], Letter.values()[Letter.values().length-1], boardWidth), CYAN_TEXT(), WHITE_BACK()));
 
         for (Ship ship : myFleet) {
             System.out.println("");
