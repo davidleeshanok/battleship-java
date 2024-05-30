@@ -147,11 +147,9 @@ public class Main {
     }
 
     private static Position getRandomPosition() {
-        int rows = 10;
-        int lines = 10;
         Random random = new Random();
-        Letter letter = Letter.values()[random.nextInt(lines)];
-        int number = random.nextInt(rows);
+        Letter letter = Letter.values()[random.nextInt(boardHeight)];
+        int number = random.nextInt(boardWidth);
         Position position = new Position(letter, number);
         return position;
     }
