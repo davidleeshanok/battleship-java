@@ -9,7 +9,7 @@ import java.util.*;
 
 public class GameController {
 
-    public static boolean checkIsHit(Collection<Ship> ships, Position shot, Set<Position> guessedPositions) {
+    public static Optional<Ship> processShot(Collection<Ship> ships, Position shot, Set<Position> guessedPositions) {
         if (ships == null) {
             throw new IllegalArgumentException("ships is null");
         }
@@ -19,20 +19,20 @@ public class GameController {
         }
 
         for (Ship ship : ships) {
+            if (guessedPositions.containsAll(ship.getPositions())) {
+                ship.setSunk(true);
+            }
+
             for (Position position : ship.getPositions()) {
-
-                if (guessedPositions.containsAll(ship.getPositions())) {
-                    ship.setSunk(true);
-                }
-
                 if (position.equals(shot)) {
-                    return true;
+                    return Optional.of(ship);
                 }
             }
         }
 
-        return false;
+        return Optional.empty();
     }
+    
 
     public static List<Ship> initializeShips() {
         return Arrays.asList(
