@@ -163,7 +163,7 @@ public class Main {
         int lines = 8;
         Random random = new Random();
         Letter letter = Letter.values()[random.nextInt(lines)];
-        int number = random.nextInt(rows);
+        int number = random.nextInt(1, rows + 1);
         Position position = new Position(letter, number);
         return position;
     }
