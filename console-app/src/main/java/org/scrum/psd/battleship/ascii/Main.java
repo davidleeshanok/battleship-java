@@ -86,6 +86,7 @@ public class Main {
                 System.out.println(colorize("            -   (\\- |  \\ /  |  /)  -",COLOR_HITS));
                 System.out.println(colorize("                 -\\  \\     /  /-",COLOR_HITS));
                 System.out.println(colorize("                   \\  \\   /  /",COLOR_HITS));
+                checkVictoryCondition();
             }
             else {
                 System.out.println(colorize("MISS",COLOR_MISSES));
@@ -108,7 +109,7 @@ public class Main {
             if (isHit) {
                 System.out.println(colorize(String.format("Computer shoot in %s%s and %s", position.getColumn(), position.getRow(), "hit your ship !"),COLOR_HITS));
                 beep();
-                System.out.println(colorize("Yeah ! Nice hit !",GREEN_TEXT()));
+                //System.out.println(colorize("Yeah ! Nice hit !",GREEN_TEXT()));
                 System.out.println(colorize("                \\         .  ./",COLOR_HITS));
                 System.out.println(colorize("              \\      .:\" \";'.:..\" \"   /",COLOR_HITS));
                 System.out.println(colorize("                  (M^^.^~~:.'\" \").",COLOR_HITS));
@@ -117,7 +118,7 @@ public class Main {
                 System.out.println(colorize("            -   (\\- |  \\ /  |  /)  -",COLOR_HITS));
                 System.out.println(colorize("                 -\\  \\     /  /-",COLOR_HITS));
                 System.out.println(colorize("                   \\  \\   /  /",COLOR_HITS));
-
+                checkVictoryCondition();
             } else {
                 System.out.println(colorize(String.format("Computer shoots in %s%s and %s", position.getColumn(), position.getRow(), "missed"), COLOR_MISSES));
             }
@@ -126,6 +127,20 @@ public class Main {
             System.out.println(colorize("Player fleet status", BRIGHT_GREEN_TEXT()));
             printFleetStatus(myFleet);
         } while (true);
+    }
+
+    private static void checkVictoryCondition() {
+        boolean isMyFleetSunk = myFleet.stream().allMatch(Ship::isSunk);
+        if (isMyFleetSunk) {
+            System.out.println(colorize("Your fleet has been sunk! YOU LOSE", RED_TEXT()));
+            System.exit(0);
+        }
+
+        boolean isEnemyFleetSunk = enemyFleet.stream().allMatch(Ship::isSunk);
+        if (isEnemyFleetSunk) {
+            System.out.println(colorize("You have sunk the enemy fleet! Congratulations! You have won Battleship!", GREEN_TEXT()));
+            System.exit(0);
+        }
     }
 
     private static void beep() {
@@ -149,7 +164,7 @@ public class Main {
     private static Position getRandomPosition() {
         Random random = new Random();
         Letter letter = Letter.values()[random.nextInt(boardHeight)];
-        int number = random.nextInt(boardWidth);
+        int number = random.nextInt(1, boardWidth + 1);
         Position position = new Position(letter, number);
         return position;
     }
